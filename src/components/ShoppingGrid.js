@@ -3,17 +3,17 @@ import React, { Fragment, useEffect, useState } from "react";
 
 export default function ShoppingGrid() {
   const [data, setData] = useState([]);
-  const [quantities, setQuantities] = useState({}); // Track quantities for each product
+  const [cartValue, setCartValue] = useState(0);
+  const [quantities, setQuantities] = useState([]);
 
-  // Fetch all products
+  // fetch all products
   useEffect(() => {
     axios
       .get("https://localhost:7184/api/Shop/GetAllProducts")
       .then((result) => {
         setData(result.data.listProducts);
-        // Initialize quantities for each product
         const initialQuantities = result.data.listProducts.reduce(
-          (acc, item) => ({ ...acc, [item.id]: 1 }), // Default quantity is 1
+          (acc, item) => ({ ...acc, [item.id]: 1 }),
           {}
         );
         setQuantities(initialQuantities);
@@ -23,7 +23,7 @@ export default function ShoppingGrid() {
       });
   }, []);
 
-  // Increment and decrement quantity for a specific product
+  // icrement and decrement quantity for a specific product
   const incrementQuantity = (itemId) => {
     setQuantities((prev) => ({
       ...prev,
@@ -34,25 +34,27 @@ export default function ShoppingGrid() {
   const decrementQuantity = (itemId) => {
     setQuantities((prev) => ({
       ...prev,
-      [itemId]: Math.max(prev[itemId] - 1, 1), // Ensure minimum quantity is 1
+      [itemId]: Math.max(prev[itemId] - 1, 1),
     }));
   };
 
-  // Add item to cart
+  // add item to cart
   const addToCart = async (itemId, itemPrice) => {
+    debugger;
     try {
       const cartItem = {
         productId: itemId,
-        quantity: quantities[itemId], // Use specific quantity for the product
+        quantity: quantities[itemId],
         price: itemPrice,
       };
-
+      const quantity = cartValue + quantities[itemId];
       const response = await axios.post(
-        "https://localhost:7184/api/Cart/AddItemToCartAsync",
+        "https://localhost:7184/api/Shop/AddItemToCart",
         cartItem
       );
 
       if (response.status === 200) {
+        setCartValue(quantity != 0 ? quantity : 0);
         alert("Item added to cart successfully!");
       }
     } catch (error) {
@@ -63,9 +65,65 @@ export default function ShoppingGrid() {
 
   return (
     <Fragment>
-      <div className="site-wrap">
-        <div className="site-navbar py-2">
-          {/* Navbar code remains unchanged */}
+      <div class="site-wrap">
+        <div class="site-navbar py-2">
+          <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="logo">
+                <div class="site-logo">
+                  <a href="getsetgo.html" class="js-logo-clone">
+                    PharmaCart
+                  </a>
+                </div>
+              </div>
+              <div class="main-nav d-none d-lg-block">
+                <nav
+                  class="site-navigation text-right text-md-center"
+                  role="navigation"
+                >
+                  <ul class="site-menu js-clone-nav d-none d-lg-block">
+                    <li>
+                      <a onClick={(event) => (window.location.href = "/")}>
+                        Home
+                      </a>
+                    </li>
+                    <li class="active">
+                      <a onClick={(event) => (window.location.href = "/")}>
+                        Store
+                      </a>
+                    </li>
+                    <li>
+                      <a href="getsetgo.html">About</a>
+                    </li>
+                    <li>
+                      <a href="getsetgo.html">Contact</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+              <div class="icons">
+                <a href="#" class="icons-btn d-inline-block js-search-open">
+                  <span class="icon-search"></span>
+                </a>
+                <a
+                  onClick={(event) =>
+                    (window.location.href = "/CartInteraction")
+                  }
+                  class="icons-btn d-inline-block bag"
+                >
+                  <span class="icon-shopping-bag"></span>
+                  <span class="number">{cartValue != 0 ? cartValue : 0}</span>
+                </a>
+
+                <a
+                  href="#"
+                  class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none"
+                >
+                  <span class="icon-menu"></span>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="site-section">
@@ -77,15 +135,15 @@ export default function ShoppingGrid() {
                     key={item.id}
                     className="col-sm-6 col-lg-4 text-center item mb-4"
                   >
-                    <a href={`shop-single.html?id=${item.id}`}>
+                    <a href="getsetgo.html">
                       <img
-                        src={item.imageUrl || "assets/images/default.png"}
+                        src={item.image}
                         alt={item.name}
                         className="img-fluid"
                       />
                     </a>
                     <h3 className="text-dark">
-                      <a href={`shop-single.html?id=${item.id}`}>{item.name}</a>
+                      <a href="getsetgo.html">{item.name}</a>
                     </h3>
                     <p className="price">
                       {item.discountedPrice ? (
@@ -130,7 +188,12 @@ export default function ShoppingGrid() {
                     </div>
                     <p>
                       <button
-                        onClick={() => addToCart(item.id, item.discountedPrice || item.actualPrice)}
+                        onClick={() =>
+                          addToCart(
+                            item.id,
+                            item.discountedPrice || item.actualPrice
+                          )
+                        }
                         className="buy-now btn btn-sm height-auto px-4 py-3 btn-primary"
                       >
                         Add To Cart
@@ -145,10 +208,24 @@ export default function ShoppingGrid() {
           </div>
         </div>
 
-        <footer className="site-footer">
-          {/* Footer code remains unchanged */}
+        <footer class="site-footer">
+          <div class="container">
+            <div class="row pt-5 mt-5 text-center">
+              <div class="col-md-12">
+                <p>
+                  Copyright &copy;{" "}
+                  <script>document.write(new Date().getFullYear());</script> All
+                  rights reserved.
+                </p>
+              </div>
+            </div>
+          </div>
         </footer>
       </div>
+
+      <script>
+        document.addEventListener('DOMContentLoaded', fetchProducts);
+      </script>
     </Fragment>
   );
 }
