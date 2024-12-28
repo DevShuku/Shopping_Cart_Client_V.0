@@ -229,7 +229,10 @@ export default function CartInteraction() {
                   {discount != 0 ? (
                     <div className="row mb-3">
                       <div className="col-md-6">
-                        <span className="text-black">
+                        <span
+                          className="text-black"
+                          style={{ color: "rgb(255, 73, 0)" }}
+                        >
                           Discount Applied Over 500$ (10% Off)
                         </span>
                       </div>

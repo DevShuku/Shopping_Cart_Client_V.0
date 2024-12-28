@@ -5,6 +5,8 @@ export default function ShoppingGrid() {
   const [data, setData] = useState([]);
   const [cartValue, setCartValue] = useState(0);
   const [quantities, setQuantities] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1); // Current page number
+  const itemsPerPage = 3; // Number of products per page
 
   // fetch all products
   useEffect(() => {
@@ -63,6 +65,44 @@ export default function ShoppingGrid() {
     }
   };
 
+  // Pagination Logic
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const currentData = data.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    debugger;
+    setCurrentPage(page);
+  };
+
+  // Render Pagination Controls
+  const renderPagination = () => {
+    debugger;
+    const pageNumbers = Array.from(
+      { length: totalPages },
+      (_, index) => index + 1
+    );
+    debugger;
+    return (
+      <div className="pagination">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => handlePageChange(number)}
+            className={`btn ${
+              number === currentPage ? "btn-primary" : "btn-light"
+            }`}
+            style={{ margin: "0 5px" }}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Fragment>
       <div class="site-wrap">
@@ -112,7 +152,7 @@ export default function ShoppingGrid() {
                   class="icons-btn d-inline-block bag"
                 >
                   <span class="icon-shopping-bag"></span>
-                  <span class="number">{cartValue != 0 ? cartValue : 0}</span>
+                  <span class="number">{cartValue !== 0 ? cartValue : 0}</span>
                 </a>
 
                 <a
@@ -129,8 +169,8 @@ export default function ShoppingGrid() {
         <div className="site-section">
           <div className="container">
             <div className="row" id="product-list">
-              {data && data.length > 0 ? (
-                data.map((item) => (
+              {currentData && currentData.length > 0 ? (
+                currentData.map((item) => (
                   <div
                     key={item.id}
                     className="col-sm-6 col-lg-4 text-center item mb-4"
@@ -205,6 +245,8 @@ export default function ShoppingGrid() {
                 <p className="text-center">No products available.</p>
               )}
             </div>
+            {/* Render Pagination */}
+            {data.length > itemsPerPage && renderPagination()}
           </div>
         </div>
 
