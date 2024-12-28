@@ -86,7 +86,10 @@ export default function ShoppingGrid() {
     );
     debugger;
     return (
-      <div className="pagination">
+      <div
+        className="pagination"
+        style={{ justifyContent: "center", display: "flex" }}
+      >
         {pageNumbers.map((number) => (
           <button
             key={number}
