@@ -4,6 +4,8 @@ This project was bootstrapped with [Create React App](https://github.com/DevShuk
 
 ## Install Axios
 
+## Note :  
+   UI template and the CSS styles, Images are downloaded from the https://colorlib.com/wp/themes/ - Free theme template section.
 In the project directory, you can run:
 
 ### `npm i axios`
